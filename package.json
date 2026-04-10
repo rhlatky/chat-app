@@ -1,0 +1,9 @@
+{
+  "name": "chat-app",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "packages/*"
+  ]
+}
