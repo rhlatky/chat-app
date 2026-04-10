@@ -23,13 +23,13 @@ describe('MessagesService', () => {
     it('should create and store new message', () => {
         const created = service.setMessage({
             userId: '550e8400-e29b-41d4-a716-446655440000',
-            username: 'Anakin',
-            message: 'Hello there',
+            username: 'Master Yoda',
+            message: 'Pass the test, you must',
         });
 
         expect(created.userId).toBe('550e8400-e29b-41d4-a716-446655440000');
-        expect(created.username).toBe('Anakin');
-        expect(created.message).toBe('Hello there');
+        expect(created.username).toBe('Master Yoda');
+        expect(created.message).toBe('Pass the test, you must');
         expect(created.id).toBeDefined();
         expect(created.createdAt).toBeDefined();
 

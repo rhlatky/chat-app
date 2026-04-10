@@ -2,10 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import {AppModule} from "../src/app.module";
-import type {CreateMessageDto} from "../src/messages/dto/createMessage.dto";
-import {messageDtoSchema} from "../src/messages/dto/message.dto";
-import {z} from "zod";
+import { AppModule } from '../src/app.module';
+import { z } from 'zod';
+import { CreateMessageDto, messageDtoSchema } from '@chat-app/contracts';
 
 describe('Messages endpoints (e2e)', () => {
   let app: INestApplication<App>;
@@ -20,13 +19,11 @@ describe('Messages endpoints (e2e)', () => {
   });
 
   it('/messages (GET)', async () => {
-    const response = await request(app.getHttpServer())
-      .get('/messages')
-      .expect(200)
+    const response = await request(app.getHttpServer()).get('/messages').expect(200);
 
     expect(Array.isArray(response.body)).toBe(true);
-    expect(response.body.length).toBe(2)
-    const parsed = z.array(messageDtoSchema).safeParse(response.body[0]);
+    expect(response.body.length).toBe(2);
+    const parsed = z.array(messageDtoSchema).safeParse(response.body);
     expect(parsed.success).toBe(true);
   });
 
@@ -36,23 +33,19 @@ describe('Messages endpoints (e2e)', () => {
       username: 'Anakin',
       message: 'This is where the fun begins',
     };
-    const response = await request(app.getHttpServer())
-        .post('/messages')
-        .send(payload)
-        .expect(201)
+    const response = await request(app.getHttpServer()).post('/messages').send(payload).expect(201);
 
     const parsed = messageDtoSchema.safeParse(response.body);
     expect(parsed.success).toBe(true);
 
     if (!parsed.success) {
-      return
+      return;
     }
 
     expect(parsed.data.userId).toBe(payload.userId);
     expect(parsed.data.username).toBe(payload.username);
     expect(parsed.data.message).toBe(payload.message);
-
-  })
+  });
 
   it('/messages (POST invalid)', async () => {
     const payload: CreateMessageDto = {
@@ -60,11 +53,8 @@ describe('Messages endpoints (e2e)', () => {
       username: 'Anakin',
       message: 'This is where the fun begins',
     };
-    await request(app.getHttpServer())
-        .post('/messages')
-        .send(payload)
-        .expect(400)
-  })
+    await request(app.getHttpServer()).post('/messages').send(payload).expect(400);
+  });
 
   afterEach(async () => {
     await app.close();
