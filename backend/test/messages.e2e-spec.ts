@@ -5,6 +5,7 @@ import { App } from 'supertest/types';
 import {AppModule} from "../src/app.module";
 import type {CreateMessageDto} from "../src/messages/dto/createMessage.dto";
 import {messageDtoSchema} from "../src/messages/dto/message.dto";
+import {z} from "zod";
 
 describe('Messages endpoints (e2e)', () => {
   let app: INestApplication<App>;
@@ -25,7 +26,7 @@ describe('Messages endpoints (e2e)', () => {
 
     expect(Array.isArray(response.body)).toBe(true);
     expect(response.body.length).toBe(2)
-    const parsed = messageDtoSchema.safeParse(response.body[0]);
+    const parsed = z.array(messageDtoSchema).safeParse(response.body[0]);
     expect(parsed.success).toBe(true);
   });
 
@@ -42,6 +43,15 @@ describe('Messages endpoints (e2e)', () => {
 
     const parsed = messageDtoSchema.safeParse(response.body);
     expect(parsed.success).toBe(true);
+
+    if (!parsed.success) {
+      return
+    }
+
+    expect(parsed.data.userId).toBe(payload.userId);
+    expect(parsed.data.username).toBe(payload.username);
+    expect(parsed.data.message).toBe(payload.message);
+
   })
 
   it('/messages (POST invalid)', async () => {
@@ -50,7 +60,7 @@ describe('Messages endpoints (e2e)', () => {
       username: 'Anakin',
       message: 'This is where the fun begins',
     };
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
         .post('/messages')
         .send(payload)
         .expect(400)
