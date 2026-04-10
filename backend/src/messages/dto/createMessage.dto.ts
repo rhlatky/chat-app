@@ -2,7 +2,9 @@ import { z } from 'zod';
 
 export const createMessageDtoSchema = z
     .object({
-        message: z.string(),
+        username: z.string().trim().min(1),
+        userId: z.uuid(),
+        message: z.string().trim().min(1),
     })
     .required();
 
