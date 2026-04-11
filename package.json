@@ -1,6 +1,9 @@
 {
   "name": "chat-app",
   "private": true,
+  "scripts": {
+    "build:contracts": "yarn workspace @chat-app/contracts build"
+  },
   "workspaces": [
     "backend",
     "frontend",

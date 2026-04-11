@@ -4,7 +4,6 @@ import {
   WebSocketGateway,
   WebSocketServer,
   WsException,
-  WsResponse,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { randomUUID } from 'node:crypto';
@@ -14,11 +13,11 @@ import { randomUUID } from 'node:crypto';
     origin: '*',
   },
 })
-export class EventsGateway {
+export class ChatGateway {
   private loggedUsers = new Map<string, string>();
 
   @WebSocketServer()
-  server: Server;
+  server!: Server;
 
   @SubscribeMessage('join')
   joinUser(@MessageBody() body: { username: string }) {
@@ -27,7 +26,7 @@ export class EventsGateway {
       this.loggedUsers.set(uuid, body.username);
       return uuid;
     }
-    return new WsException('invalid username');
+    throw new WsException('invalid username');
   }
 
   @SubscribeMessage('identity')
