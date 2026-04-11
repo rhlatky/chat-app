@@ -3,9 +3,10 @@
     <q-card v-if="currentUser" class="q-pa-md col justify-center">
       <template v-for="message in messages" :key="message.id">
         <q-chat-message
-          :text="[sanitizeHtml(message.message)]"
+          :text="[message.message]"
           :name="message.username"
           :stamp="message.createdAt"
+          :avatar="message.avatar"
           :sent="message.userId === currentUser.userId"
         ></q-chat-message>
       </template>
@@ -38,9 +39,11 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { io } from 'socket.io-client';
-import { socketEvents } from '@chat-app/contracts';
-import type { User, PresencePayload, Message } from '@chat-app/contracts';
+import type { Message, PresencePayload, User } from '@chat-app/contracts';
+import { messageSchema, socketEvents } from '@chat-app/contracts';
 import sanitizeHtml from 'sanitize-html';
+import { z } from 'zod';
+import multiavatar from '@multiavatar/multiavatar/esm';
 
 const isConnected = ref(false);
 
@@ -48,7 +51,12 @@ const currentUser = ref<User | null>(null);
 const onlineUsers = ref<PresencePayload>([]);
 
 const messageInput = ref('');
-const messages = ref<Message[]>([]);
+
+type UiMessage = Message & {
+  avatar: string;
+};
+
+const messages = ref<UiMessage[]>([]);
 
 const errorMessage = ref('');
 
@@ -63,14 +71,42 @@ const sendMessage = (message: string) => {
   messageInput.value = '';
 };
 
+const fetchMessages = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/messages');
+
+    if (!response.ok) {
+      errorMessage.value = 'Failed to load message history';
+      return;
+    }
+
+    const data: unknown = await response.json();
+    const parsed = z.array(messageSchema).safeParse(data);
+
+    if (!parsed.success) {
+      errorMessage.value = 'Data is in wrong format';
+      return;
+    }
+
+    messages.value = parsed.data.map((message) => ({
+      ...message,
+      message: sanitizeHtml(message.message),
+      avatar: `data:image/svg+xml;utf8,${encodeURIComponent(multiavatar(message.userId))}`,
+    }));
+  } catch {
+    errorMessage.value = 'Failed to load message history';
+  }
+};
+
 onMounted(() => {
   socket.on('connect', () => {
     isConnected.value = true;
     socket.emit(socketEvents.JOIN, { username: 'Anakin2' + Math.random() });
   });
 
-  socket.on(socketEvents.JOINED, (payload: User) => {
+  socket.on(socketEvents.JOINED, async (payload: User) => {
     currentUser.value = payload;
+    await fetchMessages();
     console.log(socketEvents.JOINED, payload);
   });
   socket.on(socketEvents.PRESENCE_UPDATED, (payload: PresencePayload) => {
@@ -79,7 +115,12 @@ onMounted(() => {
   });
 
   socket.on(socketEvents.MESSAGE_RECEIVED, (payload: Message) => {
-    messages.value.push(payload);
+    const sanitizedMessage = {
+      ...payload,
+      message: sanitizeHtml(payload.message),
+      avatar: `data:image/svg+xml;utf8,${encodeURIComponent(multiavatar(payload.userId))}`,
+    };
+    messages.value.push(sanitizedMessage);
   });
 
   socket.on('exception', (payload: { message: string }) => {

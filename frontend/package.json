@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@chat-app/contracts": "*",
+    "@multiavatar/multiavatar": "^1.0.7",
     "@quasar/extras": "^1.16.4",
     "pinia": "^3.0.1",
     "quasar": "^2.16.0",
@@ -30,6 +31,7 @@
     "@eslint/js": "^9.39.4",
     "@quasar/app-vite": "^2.5.1",
     "@types/node": "^22.19.11",
+    "@types/sanitize-html": "^2.16.1",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.7.0",
     "autoprefixer": "^10.4.27",
@@ -40,8 +42,7 @@
     "typescript": "^5.9.3",
     "vite-plugin-checker": "^0.12.0",
     "vue-eslint-parser": "^10.4.0",
-    "vue-tsc": "^3.2.6",
-    "@types/sanitize-html": "^2.16.1"
+    "vue-tsc": "^3.2.6"
   },
   "engines": {
     "node": "^28 || ^26 || ^24 || ^22.12",
