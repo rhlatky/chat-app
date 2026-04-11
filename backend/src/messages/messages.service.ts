@@ -1,10 +1,10 @@
-import { CreateMessageDto, MessageDto } from '@chat-app/contracts';
+import { CreateMessagePayload, Message } from '@chat-app/contracts';
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class MessagesService {
-  private messages: MessageDto[] = [
+  private messages: Message[] = [
     {
       id: randomUUID(),
       message: 'Hello there!',
@@ -21,11 +21,11 @@ export class MessagesService {
     },
   ];
 
-  getMessages(): MessageDto[] {
+  getMessages(): Message[] {
     return this.messages;
   }
-  setMessage(message: CreateMessageDto): MessageDto {
-    const messageToSet: MessageDto = {
+  setMessage(message: CreateMessagePayload): Message {
+    const messageToSet: Message = {
       ...message,
       id: randomUUID(),
       createdAt: new Date().toISOString(),
