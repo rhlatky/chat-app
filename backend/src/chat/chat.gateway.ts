@@ -1,8 +1,6 @@
 import {
   ConnectedSocket,
   MessageBody,
-  OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -10,10 +8,10 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { randomUUID } from 'node:crypto';
-import type { User, JoinPayload } from '@chat-app/contracts';
-import { joinPayloadSchema, socketEvents } from '@chat-app/contracts';
-import { UsePipes } from '@nestjs/common';
+import type { User, JoinPayload, SendMessagePayload } from '@chat-app/contracts';
+import { joinPayloadSchema, socketEvents, sendMessagePayloadSchema } from '@chat-app/contracts';
 import { ZodValidationPipe } from '../common/pipes/zodValidationPipe';
+import { MessagesService } from '../messages/messages.service';
 
 const wsExceptionFactory = (payload: { message: string; errors: unknown }) =>
   new WsException(payload);
@@ -24,6 +22,8 @@ const wsExceptionFactory = (payload: { message: string; errors: unknown }) =>
   },
 })
 export class ChatGateway {
+  constructor(private readonly messagesService: MessagesService) {}
+
   private loggedUsers = new Map<string, User>();
 
   @WebSocketServer()
@@ -34,10 +34,8 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody(new ZodValidationPipe(joinPayloadSchema, wsExceptionFactory)) body: JoinPayload,
   ) {
-    console.log('join attempt', body.username);
-    console.log('logged users', [...this.loggedUsers.values()]);
     const usernameTaken = [...this.loggedUsers.values()].some(
-      (user) => user.username === body.username,
+      (user) => user.username.toLowerCase() === body.username.toLowerCase(),
     );
 
     if (usernameTaken) {
@@ -45,11 +43,8 @@ export class ChatGateway {
         code: 'USERNAME_TAKEN',
         message: 'Username is already taken',
       };
-      client.emit(socketEvents.ERROR, error);
       throw new WsException(error);
     }
-
-    console.log('aaaaaaa');
 
     const uuid = randomUUID();
     const user: User = {
@@ -61,8 +56,36 @@ export class ChatGateway {
     client.emit(socketEvents.JOINED, user);
     this.server.emit(socketEvents.PRESENCE_UPDATED, [...this.loggedUsers.values()]);
   }
-  @SubscribeMessage('identity')
-  async identity(@MessageBody() data: number): Promise<number> {
-    return data;
+
+  @SubscribeMessage(socketEvents.SEND_MESSAGE)
+  sendMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody(new ZodValidationPipe(sendMessagePayloadSchema, wsExceptionFactory))
+    body: SendMessagePayload,
+  ) {
+    const currentUser = this.loggedUsers.get(client.id);
+
+    if (!currentUser) {
+      throw new WsException({
+        code: 'NOT JOINED',
+        message: 'User is not joined',
+      });
+    }
+
+    const createdMessage = this.messagesService.setMessage({
+      userId: currentUser.userId,
+      username: currentUser.username,
+      message: body.message,
+    });
+
+    this.server.emit(socketEvents.MESSAGE_RECEIVED, createdMessage);
+  }
+
+  handleDisconnect(client: Socket) {
+    const isUserRemoved = this.loggedUsers.delete(client.id);
+
+    if (isUserRemoved) {
+      this.server.emit(socketEvents.PRESENCE_UPDATED, [...this.loggedUsers.values()]);
+    }
   }
 }
