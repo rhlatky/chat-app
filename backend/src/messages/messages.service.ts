@@ -4,22 +4,7 @@ import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class MessagesService {
-  private messages: Message[] = [
-    {
-      id: randomUUID(),
-      message: 'Hello there!',
-      createdAt: new Date().toISOString(),
-      username: 'Obi-wan',
-      userId: randomUUID(),
-    },
-    {
-      id: randomUUID(),
-      message: 'Kenobi!',
-      createdAt: new Date().toISOString(),
-      username: 'General-Grievous',
-      userId: randomUUID(),
-    },
-  ];
+  private messages: Message[] = [];
 
   getMessages(): Message[] {
     return this.messages;

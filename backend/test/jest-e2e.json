@@ -3,7 +3,18 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
+  "extensionsToTreatAsEsm": [".ts"],
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        "useESM": true,
+        "tsconfig": "tsconfig.spec.json"
+      }
+    ]
+  },
+  "moduleNameMapper": {
+    "^@chat-app/contracts$": "<rootDir>/../../packages/contracts/src/index.ts",
+    "^(\\.{1,2}/.*)\\.js$": "$1"
   }
 }

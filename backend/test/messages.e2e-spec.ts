@@ -22,7 +22,7 @@ describe('Messages endpoints (e2e)', () => {
     const response = await request(app.getHttpServer()).get('/messages').expect(200);
 
     expect(Array.isArray(response.body)).toBe(true);
-    expect(response.body.length).toBe(2);
+    expect(response.body).toHaveLength(0);
     const parsed = z.array(messageSchema).safeParse(response.body);
     expect(parsed.success).toBe(true);
   });
