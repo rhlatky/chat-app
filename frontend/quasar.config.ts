@@ -5,6 +5,14 @@ import { defineConfig } from '#q-app/wrappers';
 import { resolve } from 'node:path';
 
 export default defineConfig((/* ctx */) => {
+  const devServer = {
+    open: process.env.DOCKER !== 'true',
+    ...(process.env.QUASAR_DEV_HOST ? { host: process.env.QUASAR_DEV_HOST } : {}),
+    ...(process.env.QUASAR_DEV_PORT
+      ? { port: Number(process.env.QUASAR_DEV_PORT) }
+      : {}),
+  };
+
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -73,10 +81,7 @@ export default defineConfig((/* ctx */) => {
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
-    devServer: {
-      // https: true,
-      open: true, // opens browser window automatically
-    },
+    devServer,
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework
     framework: {
@@ -93,7 +98,7 @@ export default defineConfig((/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Notify'],
     },
 
     // animations: 'all', // --- includes all animations

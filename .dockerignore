@@ -1,0 +1,15 @@
+.git
+.DS_Store
+node_modules
+**/node_modules
+dist
+**/dist
+coverage
+**/coverage
+.cache
+**/.cache
+.idea
+.vscode
+*.log
+tmp
+.tmp

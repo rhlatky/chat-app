@@ -14,20 +14,10 @@
   </q-card-section>
 
   <q-separator />
-
-  <q-banner
-    v-if="props.errorMessage"
-    dense
-    inline-actions
-    class="bg-orange-1 text-orange-10 q-mx-md q-mt-md rounded-borders"
-  >
-    {{ props.errorMessage }}
-  </q-banner>
 </template>
 
 <script setup lang="ts">
 const props = defineProps<{
   isConnected: boolean;
-  errorMessage: string;
 }>();
 </script>

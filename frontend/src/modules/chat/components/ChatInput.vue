@@ -3,7 +3,6 @@
     <q-input
       v-model:model-value="messageInput"
       outlined
-      rounded
       bg-color="white"
       placeholder="Write a message"
       @keyup.enter="handleSend"

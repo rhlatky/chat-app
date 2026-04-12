@@ -4,7 +4,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { z } from 'zod';
-import { CreateMessageDto, messageDtoSchema } from '@chat-app/contracts';
+import { CreateMessagePayload, messageSchema } from '@chat-app/contracts';
 
 describe('Messages endpoints (e2e)', () => {
   let app: INestApplication<App>;
@@ -23,19 +23,19 @@ describe('Messages endpoints (e2e)', () => {
 
     expect(Array.isArray(response.body)).toBe(true);
     expect(response.body.length).toBe(2);
-    const parsed = z.array(messageDtoSchema).safeParse(response.body);
+    const parsed = z.array(messageSchema).safeParse(response.body);
     expect(parsed.success).toBe(true);
   });
 
   it('/messages (POST)', async () => {
-    const payload: CreateMessageDto = {
+    const payload: CreateMessagePayload = {
       userId: '550e8400-e29b-41d4-a716-446655440000',
       username: 'Anakin',
       message: 'This is where the fun begins',
     };
     const response = await request(app.getHttpServer()).post('/messages').send(payload).expect(201);
 
-    const parsed = messageDtoSchema.safeParse(response.body);
+    const parsed = messageSchema.safeParse(response.body);
     expect(parsed.success).toBe(true);
 
     if (!parsed.success) {
@@ -48,7 +48,7 @@ describe('Messages endpoints (e2e)', () => {
   });
 
   it('/messages (POST invalid)', async () => {
-    const payload: CreateMessageDto = {
+    const payload: CreateMessagePayload = {
       userId: 'invalid id',
       username: 'Anakin',
       message: 'This is where the fun begins',
