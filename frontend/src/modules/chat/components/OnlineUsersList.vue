@@ -25,11 +25,15 @@
           >
             {{ user.username }}
           </q-item-label>
-          <q-item-label caption>Online now</q-item-label>
+          <q-item-label caption>
+            {{
+              user.userId === currentUserId && !props.isConnected ? 'Disconnected' : 'Online now'
+            }}
+          </q-item-label>
         </q-item-section>
 
         <q-item-section side>
-          <q-badge rounded color="positive" />
+          <q-badge rounded :color="props.isConnected ? 'positive' : 'grey-4'" />
         </q-item-section>
       </q-item>
     </q-list>
@@ -47,6 +51,10 @@ const props = defineProps({
   },
   currentUserId: {
     type: String,
+    required: true,
+  },
+  isConnected: {
+    type: Boolean,
     required: true,
   },
 });
