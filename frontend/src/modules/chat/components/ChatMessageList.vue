@@ -22,6 +22,7 @@
           :stamp="message.createdAt"
           :avatar="message.avatar"
           :sent="message.userId === currentUserId"
+          :bg-color="message.userId === currentUserId ? 'amber-3' : 'grey-3'"
         />
       </template>
     </template>

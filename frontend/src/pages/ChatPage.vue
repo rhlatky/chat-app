@@ -6,7 +6,7 @@
 
     <div v-else class="row no-wrap full-height q-pa-md">
       <div class="q-pr-md">
-        <online-users-list :online-users="onlineUsers" />
+        <online-users-list :current-user-id="currentUser.userId" :online-users="onlineUsers" />
       </div>
 
       <div class="col column overflow-hidden chat-panel">
@@ -21,7 +21,7 @@
 
           <q-separator />
 
-          <chat-input @send="sendMessage" />
+          <chat-input :disabled="!isConnected" @send="sendMessage" />
         </q-card>
       </div>
     </div>

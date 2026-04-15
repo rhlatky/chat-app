@@ -1,4 +1,4 @@
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { io } from 'socket.io-client';
 import type { Message, PresencePayload, User } from '@chat-app/contracts';
 import { messageSchema, socketEvents } from '@chat-app/contracts';
@@ -11,7 +11,10 @@ import { useQuasar } from 'quasar';
 
 export function useChat() {
   const $q = useQuasar();
-  const isConnected = ref(false);
+
+  const isSocketConnected = ref(false);
+  const isBrowserOnline = ref(navigator.onLine);
+  const isConnected = computed(() => isSocketConnected.value && isBrowserOnline.value);
 
   const currentUser = ref<User | null>(null);
   const onlineUsers = ref<UiUser[]>([]);
@@ -69,9 +72,21 @@ export function useChat() {
     }
   };
 
+  const handleBrowserOffline = () => {
+    isBrowserOnline.value = false;
+  };
+
+  const handleBrowserOnline = () => {
+    isBrowserOnline.value = true;
+    isSocketConnected.value = socket.connected;
+  };
+
   onMounted(() => {
+    window.addEventListener('offline', handleBrowserOffline);
+    window.addEventListener('online', handleBrowserOnline);
+
     socket.on('connect', () => {
-      isConnected.value = true;
+      isSocketConnected.value = true;
     });
 
     socket.on(socketEvents.JOINED, async (payload: User) => {
@@ -95,11 +110,13 @@ export function useChat() {
     });
 
     socket.on('disconnect', () => {
-      isConnected.value = false;
+      isSocketConnected.value = false;
     });
   });
 
   onBeforeUnmount(() => {
+    window.removeEventListener('offline', handleBrowserOffline);
+    window.removeEventListener('online', handleBrowserOnline);
     socket.off('connect');
     socket.off(socketEvents.JOINED);
     socket.off(socketEvents.PRESENCE_UPDATED);
