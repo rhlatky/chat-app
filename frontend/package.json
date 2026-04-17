@@ -15,8 +15,7 @@
     "predev": "yarn workspace @chat-app/contracts build",
     "dev": "quasar dev",
     "prebuild": "yarn workspace @chat-app/contracts build",
-    "build": "quasar build",
-    "postinstall": "quasar prepare"
+    "build": "quasar build"
   },
   "dependencies": {
     "@chat-app/contracts": "*",

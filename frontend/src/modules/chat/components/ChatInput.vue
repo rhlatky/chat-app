@@ -1,24 +1,27 @@
 <template>
   <q-card-section class="q-pa-md">
-    <q-input
-      v-model:model-value="messageInput"
-      outlined
-      :disable="props.disabled"
-      bg-color="white"
-      placeholder="Write a message"
-      @keyup.enter="handleSend"
-    >
-      <template #append>
-        <q-btn
-          :disable="props.disabled"
-          flat
-          round
-          color="amber-8"
-          icon="send"
-          @click="handleSend"
-        />
-      </template>
-    </q-input>
+    <div data-testid="chat-message-input">
+      <q-input
+        v-model:model-value="messageInput"
+        outlined
+        :disable="props.disabled"
+        bg-color="white"
+        placeholder="Write a message"
+        @keyup.enter="handleSend"
+      >
+        <template #append>
+          <q-btn
+            :disable="props.disabled"
+            flat
+            round
+            color="amber-8"
+            icon="send"
+            data-testid="chat-message-send"
+            @click="handleSend"
+          />
+        </template>
+      </q-input>
+    </div>
     <div v-if="disabled" class="text-caption text-grey-6 q-mt-sm">
       You are disconnected. Messages are temporarily disabled.
     </div>

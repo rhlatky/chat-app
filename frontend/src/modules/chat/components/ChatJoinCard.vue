@@ -5,13 +5,15 @@
       You’ll appear in the online list under this name
     </div>
 
-    <q-input
-      v-model:model-value="usernameInput"
-      outlined
-      class="q-mt-lg"
-      label="Username"
-      @keyup.enter="handleJoin"
-    />
+    <div data-testid="chat-join-username">
+      <q-input
+        v-model:model-value="usernameInput"
+        outlined
+        class="q-mt-lg"
+        label="Username"
+        @keyup.enter="handleJoin"
+      />
+    </div>
 
     <q-btn
       color="amber-8"
@@ -20,6 +22,7 @@
       no-caps
       class="full-width q-mt-md"
       label="Enter room"
+      data-testid="chat-join-submit"
       @click="handleJoin"
     />
   </q-card>

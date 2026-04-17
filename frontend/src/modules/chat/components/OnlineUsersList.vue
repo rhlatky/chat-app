@@ -7,36 +7,41 @@
 
     <q-separator />
 
-    <q-list class="col overflow-auto">
-      <q-item
-        v-for="user in props.onlineUsers"
-        :key="user.userId"
-        :class="user.userId === currentUserId ? 'bg-amber-1 rounded-borders' : ''"
-      >
-        <q-item-section avatar>
-          <q-avatar size="40px" :class="{ 'current-user-avatar': user.userId === currentUserId }">
-            <img :src="user.avatar" :alt="user.username" />
-          </q-avatar>
-        </q-item-section>
+    <div data-testid="online-users-list" class="col overflow-auto">
+      <q-list>
+        <q-item
+          v-for="user in props.onlineUsers"
+          :key="user.userId"
+          :class="user.userId === currentUserId ? 'bg-amber-1 rounded-borders' : ''"
+        >
+          <q-item-section avatar>
+            <q-avatar size="40px" :class="{ 'current-user-avatar': user.userId === currentUserId }">
+              <img :src="user.avatar" :alt="user.username" />
+            </q-avatar>
+          </q-item-section>
 
-        <q-item-section>
-          <q-item-label
-            :class="user.userId === currentUserId ? 'text-weight-medium text-amber-8' : ''"
-          >
-            {{ user.username }}
-          </q-item-label>
-          <q-item-label caption>
-            {{
-              user.userId === currentUserId && !props.isConnected ? 'Disconnected' : 'Online now'
-            }}
-          </q-item-label>
-        </q-item-section>
+          <q-item-section>
+            <q-item-label
+              :class="user.userId === currentUserId ? 'text-weight-medium text-amber-8' : ''"
+            >
+              {{ user.username }}
+            </q-item-label>
+            <q-item-label caption>
+              {{
+                user.userId === currentUserId && !props.isConnected ? 'Disconnected' : 'Online now'
+              }}
+            </q-item-label>
+          </q-item-section>
 
-        <q-item-section side>
-          <q-badge rounded :color="props.isConnected ? 'positive' : 'grey-4'" />
-        </q-item-section>
-      </q-item>
-    </q-list>
+          <q-item-section side>
+            <q-badge
+              rounded
+              :color="user.userId === currentUserId && !props.isConnected ? 'grey-4' : 'positive'"
+            />
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </div>
   </q-card>
 </template>
 
