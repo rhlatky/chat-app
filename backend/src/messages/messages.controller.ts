@@ -9,12 +9,12 @@ export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
   @Get()
-  getMessages(): Message[] {
+  getMessages(): Promise<Message[]> {
     return this.messagesService.getMessages();
   }
   @Post()
   @UsePipes(new ZodValidationPipe(createMessagePayloadSchema))
-  setMessage(@Body() body: CreateMessagePayload): Message {
+  setMessage(@Body() body: CreateMessagePayload): Promise<Message> {
     return this.messagesService.setMessage(body);
   }
 }

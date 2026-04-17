@@ -1,22 +1,30 @@
 import { CreateMessagePayload, Message } from '@chat-app/contracts';
 import { Injectable } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class MessagesService {
-  private messages: Message[] = [];
+  constructor(private readonly prisma: PrismaService) {}
 
-  getMessages(): Message[] {
-    return this.messages;
-  }
-  setMessage(message: CreateMessagePayload): Message {
-    const messageToSet: Message = {
+  async getMessages(): Promise<Message[]> {
+    const messages = await this.prisma.message.findMany({
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+    return messages.map((message) => ({
       ...message,
-      id: randomUUID(),
-      createdAt: new Date().toISOString(),
-    };
+      createdAt: message.createdAt.toISOString(),
+    }));
+  }
+  async setMessage(message: CreateMessagePayload): Promise<Message> {
+    const createdMessage = await this.prisma.message.create({
+      data: message,
+    });
 
-    this.messages.push(messageToSet);
-    return messageToSet;
+    return {
+      ...createdMessage,
+      createdAt: createdMessage.createdAt.toISOString(),
+    };
   }
 }

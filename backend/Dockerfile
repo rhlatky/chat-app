@@ -13,6 +13,8 @@ COPY tsconfig.base.json ./
 COPY backend backend
 COPY packages packages
 
+RUN yarn workspace backend prisma:generate prisma migrate
+
 EXPOSE 3000
 
 CMD ["yarn", "workspace", "backend", "start:dev"]

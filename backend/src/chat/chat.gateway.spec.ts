@@ -68,7 +68,7 @@ describe('ChatGateway', () => {
     expect(() => gateway.joinUser(client2, { username: 'Anakin' })).toThrow();
   });
 
-  it('sends a message for a joined user and emits message_received', () => {
+  it('sends a message for a joined user and emits message_received', async () => {
     gateway.joinUser(client, {
       username: 'Anakin',
     });
@@ -93,12 +93,12 @@ describe('ChatGateway', () => {
       createdAt: '2026-04-15T10:00:00.000Z',
     };
 
-    messagesService.setMessage.mockReturnValue(createdMessage);
+    messagesService.setMessage.mockResolvedValue(createdMessage);
 
     clientEmit.mockClear();
     serverEmit.mockClear();
 
-    gateway.sendMessage(client, {
+    await gateway.sendMessage(client, {
       message: 'Hello there',
     });
 
@@ -111,12 +111,8 @@ describe('ChatGateway', () => {
     expect(serverEmit).toHaveBeenCalledWith(socketEvents.MESSAGE_RECEIVED, createdMessage);
   });
 
-  it('throws when unjoined user tries to send a message', () => {
-    expect(() =>
-      gateway.sendMessage(client, {
-        message: 'Hello there',
-      }),
-    ).toThrow();
+  it('throws when unjoined user tries to send a message', async () => {
+    await expect(gateway.sendMessage(client, { message: 'Hello there' })).rejects.toThrow();
 
     expect(messagesService.setMessage).not.toHaveBeenCalled();
     expect(serverEmit).not.toHaveBeenCalled();

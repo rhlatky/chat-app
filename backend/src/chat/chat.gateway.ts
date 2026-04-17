@@ -58,7 +58,7 @@ export class ChatGateway {
   }
 
   @SubscribeMessage(socketEvents.SEND_MESSAGE)
-  sendMessage(
+  async sendMessage(
     @ConnectedSocket() client: Socket,
     @MessageBody(new ZodValidationPipe(sendMessagePayloadSchema, wsExceptionFactory))
     body: SendMessagePayload,
@@ -72,7 +72,7 @@ export class ChatGateway {
       });
     }
 
-    const createdMessage = this.messagesService.setMessage({
+    const createdMessage = await this.messagesService.setMessage({
       userId: currentUser.userId,
       username: currentUser.username,
       message: body.message,
