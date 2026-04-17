@@ -1,81 +1,44 @@
 # UXTweak Chat App
 
-Simple realtime chat application with:
-- Vue/Quasar frontend
-- NestJS backend
-- Socket.IO for realtime messaging and presence
+Realtime chat application built with:
+- Vue + Quasar frontend
+- NestJS + Socket.IO backend
 - PostgreSQL + Prisma for persisted message history
 
 ## Docker Compose
 
-### Prerequisites
-- Node.js
-- Yarn
+Prerequisite:
 - Docker Desktop
 
-### Install dependencies
-```bash
-yarn install
-```
-
-### Create backend environment file
-```bash
-cp backend/.env.example backend/.env
-```
-
-### First run
-On the first run with a fresh PostgreSQL volume, start the stack and then apply Prisma migrations:
+Run the full stack:
 
 ```bash
 docker compose up
 ```
 
-In a separate terminal:
+Available at:
+- frontend: `http://localhost:9001`
+- backend: `http://localhost:3000`
 
-```bash
-cd backend
-yarn prisma:migrate:deploy
-```
-
-### Later runs
-If the database volume already contains the schema, start everything directly:
-
-```bash
-docker compose up
-```
-
-Prisma Client generation is handled during the backend Docker image build. Database migrations are not run automatically on container startup and must be applied manually when the database is fresh or when a new migration is added.
+`backend/.env` is not required for the Docker flow. Prisma Client is generated during the backend image build and Prisma migrations are applied automatically before the backend starts.
 
 ## Local development
 
-### Prerequisites
+Prerequisites:
 - Node.js
 - Yarn
 - Docker Desktop or a local PostgreSQL instance
 
-### Install dependencies
+Setup:
+
 ```bash
 yarn install
-```
-
-### Create backend environment file
-```bash
 cp backend/.env.example backend/.env
-```
-
-### Start PostgreSQL
-```bash
 docker compose up -d postgres
+cd backend && yarn prisma:migrate:deploy
 ```
 
-### Apply database migrations
-```bash
-cd backend
-yarn prisma:migrate:deploy
-```
-
-### Start the apps
-In separate terminals:
+Start the apps in separate terminals:
 
 ```bash
 yarn workspace backend start:dev
@@ -85,4 +48,45 @@ yarn workspace backend start:dev
 yarn workspace frontend dev
 ```
 
-Frontend runs on `http://localhost:9001` and backend on `http://localhost:3000`.
+The backend start scripts generate the Prisma client automatically before startup.
+
+## Testing
+
+Backend:
+
+```bash
+yarn workspace backend test
+yarn workspace backend test:e2e
+```
+
+Frontend:
+
+```bash
+cd frontend && yarn test
+cd frontend && yarn test:e2e
+```
+
+Before running frontend e2e tests, the full stack must already be running.
+
+## Architecture notes
+
+- Message history is persisted in PostgreSQL through Prisma.
+- Online presence is runtime-only and kept in websocket gateway memory.
+- After a backend restart, message history remains but online presence resets.
+- Shared transport types and validation schemas live in `@chat-app/contracts`.
+
+## Known limitations
+
+- Message history is loaded as a single list; pagination is not implemented.
+- The message list does not use virtual scrolling.
+- Automatic scrolling to the latest message is not implemented.
+- There is no registration or authentication flow.
+- Users join by choosing a display name, validated only for current runtime uniqueness.
+
+## Testing note
+
+Backend e2e tests run against the configured database and are not isolated behind a dedicated test database. In a larger project, I would separate them behind a test-specific database and environment configuration.
+
+## AI usage
+
+AI was used for guidance, debugging, troubleshooting, Docker setup, and testing configuration. The assignment was implemented manually by me. AI was used as an assistant for discussion, diagnosis, and iteration, not as a blind end-to-end code generator.
