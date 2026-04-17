@@ -17,3 +17,5 @@ yarn-error.log*
 .idea
 
 /generated/prisma
+/frontend/playwright-report
+/frontend/test-results
