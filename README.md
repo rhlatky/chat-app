@@ -17,7 +17,7 @@ docker compose up
 ```
 
 Available at:
-- frontend: `http://localhost:9001`
+- frontend: `http://localhost:9000`
 - backend: `http://localhost:3000`
 
 `backend/.env` is not required for the Docker flow. Prisma Client is generated during the backend image build and Prisma migrations are applied automatically before the backend starts.

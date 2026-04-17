@@ -36,11 +36,11 @@ services:
     environment:
       DOCKER: 'true'
       QUASAR_DEV_HOST: '0.0.0.0'
-      QUASAR_DEV_PORT: '9001'
+      QUASAR_DEV_PORT: '9000'
     depends_on:
       - backend
     ports:
-      - '9001:9001'
+      - '9000:9000'
 
 volumes:
   postgres_data:

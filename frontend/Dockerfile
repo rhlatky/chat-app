@@ -15,6 +15,6 @@ COPY packages packages
 
 WORKDIR /app/frontend
 
-EXPOSE 9001
+EXPOSE 9000
 
 CMD ["yarn", "dev"]
