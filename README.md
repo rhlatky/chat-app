@@ -62,8 +62,8 @@ yarn workspace backend test:e2e
 Frontend:
 
 ```bash
-cd frontend && yarn test
-cd frontend && yarn test:e2e
+yarn workspace frontend test
+yarn workspace frontend test:e2e
 ```
 
 Before running frontend e2e tests, the full stack must already be running.
