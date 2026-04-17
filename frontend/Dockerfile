@@ -13,8 +13,6 @@ COPY tsconfig.base.json ./
 COPY frontend frontend
 COPY packages packages
 
-RUN yarn workspace frontend postinstall
-
 WORKDIR /app/frontend
 
 EXPOSE 9001
