@@ -1,4 +1,4 @@
-# UXTweak Chat App
+# Chat App
 
 Realtime chat application built with:
 - Vue + Quasar frontend
