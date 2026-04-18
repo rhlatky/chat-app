@@ -13,7 +13,7 @@ Prerequisite:
 Run the full stack:
 
 ```bash
-docker compose up
+docker compose up -d
 ```
 
 Available at:
